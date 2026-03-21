@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playground — Micah Joy Aguilar</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F4F0; --bg-card: #FDFBF8; --text: #1C1917; --text-muted: #8C8079;
+      --accent: #B5977A; --accent-2: #A0B09A; --border: rgba(28,25,23,0.09);
+      --radius: 16px; --radius-sm: 10px;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-grotesk: 'Bricolage Grotesque', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; cursor: none; }
+    #cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s, opacity .2s; mix-blend-mode: multiply; }
+    #cursor-ring { position: fixed; width: 36px; height: 36px; border: 1.5px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .35s cubic-bezier(.25,.46,.45,.94), height .35s, opacity .2s; opacity: 0.5; }
+    body:hover #cursor { opacity: 1; }
+    .cursor-hover #cursor { width: 18px; height: 18px; }
+    .cursor-hover #cursor-ring { width: 56px; height: 56px; opacity: 0.25; }
+    #noise-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.06; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); background-size: 200px 200px; opacity: 0.04; mix-blend-mode: multiply; }
+    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(28,25,23,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(28,25,23,0.04) 1px, transparent 1px); background-size: 48px 48px; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 20px 0; transition: background .4s, backdrop-filter .4s, padding .3s, box-shadow .4s; }
+    nav.scrolled { padding: 14px 0; background: rgba(247,244,240,0.65); backdrop-filter: blur(28px) saturate(180%) brightness(1.05); -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05); box-shadow: 0 1px 0 var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .nav-logo-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 400; font-style: italic; color: var(--text); letter-spacing: -0.01em; }
+    .nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .nav-logo-title { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .nav-cta { color: var(--text); border: 1px solid rgba(28,25,23,0.2); padding: 8px 18px; border-radius: 100px; transition: background .2s, color .2s, border-color .2s; }
+    .nav-links .nav-cta:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .65s cubic-bezier(.25,.46,.45,.94), transform .65s cubic-bezier(.25,.46,.45,.94); }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── HERO ── */
+    .pg-hero { padding: 160px 0 80px; border-bottom: 1px solid var(--border); }
+    .pg-eyebrow { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .pg-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--accent); display: block; }
+    .pg-headline { font-family: var(--font-grotesk); font-size: clamp(2.8rem, 5vw, 5.5rem); font-weight: 500; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 24px; }
+    .pg-headline em { font-family: var(--font-serif); font-style: italic; font-weight: 300; text-transform: none; color: var(--accent); font-size: 1.08em; }
+    .pg-sub { font-size: 1.05rem; line-height: 1.75; color: var(--text-muted); max-width: 560px; }
+
+    /* ── FILTER TABS ── */
+    .pg-filters { display: flex; gap: 10px; padding: 48px 0 0; flex-wrap: wrap; }
+    .filter-btn { font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 100px; padding: 8px 20px; background: var(--bg-card); color: var(--text-muted); cursor: pointer; transition: all .2s; }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(181,151,122,0.06); }
+    .filter-btn.active { font-weight: 600; }
+
+    /* ── GRID ── */
+    .pg-body { padding: 80px 0 120px; position: relative; z-index: 1; }
+    .pg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .pg-hero { position: relative; z-index: 1; }
+    .pg-coming-soon { position: relative; z-index: 1; }
+
+    /* ── CARDS ── */
+    .pg-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      transition: transform .35s cubic-bezier(.25,.46,.45,.94), box-shadow .35s, border-color .35s;
+      cursor: pointer;
+      position: relative;
+    }
+    .pg-card:hover { transform: translateY(-6px); box-shadow: 0 20px 56px rgba(28,25,23,0.1); border-color: rgba(181,151,122,0.3); }
+    .pg-card.wide { grid-column: span 2; }
+    .pg-card.tall .pg-card-img { aspect-ratio: 4/5; }
+
+    .pg-card-img {
+      width: 100%; aspect-ratio: 4/3;
+      background: #E8E0D8;
+      overflow: hidden;
+      position: relative;
+    }
+    .pg-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .5s cubic-bezier(.25,.46,.45,.94); }
+    .pg-card:hover .pg-card-img img { transform: scale(1.04); }
+    .pg-card-placeholder {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px;
+      font-family: var(--font-mono); font-size: 0.62rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    .pg-card-placeholder-icon { font-size: 1.8rem; opacity: 0.5; }
+
+    .pg-card-body { padding: 20px 22px 22px; }
+    .pg-card-cat { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .pg-card-title { font-family: var(--font-sans); font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 5px; line-height: 1.3; }
+    .pg-card-desc { font-size: 0.82rem; line-height: 1.6; color: var(--text-muted); }
+
+    /* Category color accents */
+    .pg-card[data-cat="diy"] .pg-card-cat { color: #C4866A; }
+    .pg-card[data-cat="diy"] .pg-card-placeholder { background: #F5EDE8; }
+    .pg-card[data-cat="graphic"] .pg-card-cat { color: var(--accent-2); }
+    .pg-card[data-cat="graphic"] .pg-card-placeholder { background: #EAF0E8; }
+    .pg-card[data-cat="interior"] .pg-card-cat { color: #9B8FB0; }
+    .pg-card[data-cat="interior"] .pg-card-placeholder { background: #EDE8F2; }
+
+    /* Hidden state for filtering */
+    .pg-card.hidden { display: none; }
+
+    /* ── COMING SOON BANNER ── */
+    .pg-coming-soon {
+      margin-top: 64px;
+      padding: 40px 48px;
+      background: var(--bg-card);
+      border: 1px dashed rgba(181,151,122,0.4);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+    .pg-coming-soon-icon { font-size: 2rem; flex-shrink: 0; }
+    .pg-coming-soon-title { font-family: var(--font-grotesk); font-size: 1rem; font-weight: 500; letter-spacing: -0.02em; text-transform: uppercase; color: var(--text); margin-bottom: 4px; }
+    .pg-coming-soon-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
+
+    footer { padding: 32px 0; border-top: 1px solid var(--border); }
+    .footer-copy { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--text-muted); }
+    .footer-back { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .footer-back:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .pg-grid { grid-template-columns: repeat(2, 1fr); }
+      .pg-card.wide { grid-column: span 2; }
+      .container { padding: 0 24px; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .pg-grid { grid-template-columns: 1fr; }
+      .pg-card.wide { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <canvas id="noise-canvas"></canvas>
+  <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+    <defs>
+      <filter id="glass-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.025" numOctaves="2" seed="3"/>
+        <feDisplacementMap scale="4" xChannelSelector="R" yChannelSelector="G"/>
+        <feGaussianBlur stdDeviation="0.4"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <nav id="main-nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-logo">
+          <span class="nav-logo-name">micah joy</span>
+          <span class="nav-logo-dot"></span>
+          <span class="nav-logo-title">product designer</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html#work">Work</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="playground.html" style="color:var(--text)">Playground</a></li>
+          <li><a href="index.html#contact" class="nav-cta">Let's Talk</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="pg-hero">
+    <div class="container">
+      <div class="pg-eyebrow reveal">Playground</div>
+      <h1 class="pg-headline reveal">
+        Design is<br>
+        <em>everything</em><br>
+        I do.
+      </h1>
+      <p class="pg-sub reveal">Beyond client work and case studies — this is where I make things just because I love making things. DIY projects, graphic design explorations, and the ADU I'm designing from scratch.</p>
+      <div class="pg-filters reveal">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="diy">DIY & Crafts</button>
+        <button class="filter-btn" data-filter="graphic">Graphic Design</button>
+        <button class="filter-btn" data-filter="interior">Interior Design</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GRID -->
+  <section class="pg-body">
+    <div class="container">
+      <div class="pg-grid" id="pg-grid">
+
+        <!-- ── INTERIOR DESIGN ── -->
+        <div class="pg-card wide" data-cat="interior">
+          <div class="pg-card-img">
+            <!-- Replace src with your actual ADU photo -->
+            <div class="pg-card-placeholder">
+              <div class="pg-card-placeholder-icon">🏠</div>
+              Add your ADU photo here
+            </div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">Interior Design</div>
+            <div class="pg-card-title">The ADU Build</div>
+            <div class="pg-card-desc">Designing a full accessory dwelling unit from the ground up — tile selection, flooring, paint palette, fixtures, and everything in between. Equal parts project management and interior design.</div>
+          </div>
+        </div>
+
+        <div class="pg-card" data-cat="interior">
+          <div class="pg-card-img">
+            <div class="pg-card-placeholder">
+              <div class="pg-card-placeholder-icon">🎨</div>
+              Add tile/flooring mood board
+            </div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">Interior Design</div>
+            <div class="pg-card-title">Material & Color Palette</div>
+            <div class="pg-card-desc">The mood board and material selections for the ADU — earthy tones, warm textures, and finishes that feel timeless without being boring.</div>
+          </div>
+        </div>
+
+        <!-- ── GRAPHIC DESIGN ── -->
+        <div class="pg-card" data-cat="graphic">
+          <div class="pg-card-img">
+            <div class="pg-card-placeholder">
+              <div class="pg-card-placeholder-icon">✦</div>
+              Add your graphic design work
+            </div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">Graphic Design</div>
+            <div class="pg-card-title">Brand & Social Graphics</div>
+            <div class="pg-card-desc">Social media graphics, brand collateral, and visual identity work from freelance clients — where design meets marketing.</div>
+          </div>
+        </div>
+
+        <div class="pg-card wide" data-cat="graphic">
+          <div class="pg-card-img">
+            <div class="pg-card-placeholder">
+              <div class="pg-card-placeholder-icon">📐</div>
+              Add pitch deck / brand guidelines
+            </div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">Graphic Design</div>
+            <div class="pg-card-title">Pitch Decks & Brand Guidelines</div>
+            <div class="pg-card-desc">Presentation design and brand systems created for startup clients — from color palettes and typography to full deck layouts that tell a compelling story.</div>
+          </div>
+        </div>
+
+        <div class="pg-card" data-cat="graphic">
+          <div class="pg-card-img">
+            <div class="pg-card-placeholder">
+              <div class="pg-card-placeholder-icon">🖋</div>
+              Add typography / poster work
+            </div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">Graphic Design</div>
+            <div class="pg-card-title">Type & Visual Explorations</div>
+            <div class="pg-card-desc">Personal experiments in typography, poster design, and visual composition — the work I make just to stay sharp and have fun.</div>
+          </div>
+        </div>
+
+        <!-- ── DIY & CRAFTS — ORNAMENTS ── -->
+        <div class="pg-card wide" data-cat="diy">
+          <div style="display:grid; grid-template-columns:repeat(5,1fr); grid-template-rows:repeat(2,140px); gap:3px; background:#E8E0D8;">
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5d877cc7e25b71164b7_carolorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5d63432034c5bbb376c_zaraorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5fdca534486d3e60520_landk.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737cd5e1150a42769495c75_Screen%20Shot%202024-11-15%20at%202.36.02%20PM.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c605f097f530f3df1e94_enzoorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5f3f097f530f3df0ea9_marblesorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5de8f42a44fb3b02625_pinkunicorn.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5f857936bf4437789f2_aandm.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5e55cd85a74aeda5d50_petraorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5f21a31910324a42ea3_kofam.png') center/cover; width:100%; height:100%;"></div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">DIY & Crafts</div>
+            <div class="pg-card-title">Custom Christmas Ornaments 🎄</div>
+            <div class="pg-card-desc">'Tis the season to be creative — a collection of hand-crafted custom ornaments made with lots of love. Each one is a tiny design project in its own right.</div>
+          </div>
+        </div>
+
+        <div class="pg-card" data-cat="diy">
+          <div style="display:grid; grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(5,100px); gap:3px; background:#E8E0D8;">
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5ec39abb4696cf00c84_marbleornaments.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737cd59231354b5de5a06f7_Screen%20Shot%202024-11-15%20at%202.31.30%20PM.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5db24ffd1b6ce5e7483_jennygift.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5d5abe1e6991d64fb5f_bande.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5d22f667e66cd0ca7a8_ginggift.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737cd646555b308fee6587c_Screen%20Shot%202024-11-15%20at%202.32.03%20PM.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5e61862fdf367166a80_marblefamilyorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c60c4adb48697f32133f_bitongorder.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737c5eaf07231f57113ddeb_henrymonygift.png') center/cover; width:100%; height:100%;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737cd6847a856ea494a0ea8_Screen%20Shot%202024-11-15%20at%202.37.55%20PM.png') center/cover; width:100%; height:100%;"></div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">DIY & Crafts</div>
+            <div class="pg-card-title">More Ornament Designs</div>
+            <div class="pg-card-desc">More custom ornament commissions — marble designs, family names, personalized gifts. Every order is unique and made from scratch.</div>
+          </div>
+        </div>
+
+        <!-- ── DIY — CUSTOM CREATIONS ── -->
+        <div class="pg-card wide" data-cat="diy">
+          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:3px; background:#E8E0D8;">
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737dc34abaef884737b395f_Screen%20Shot%202024-11-15%20at%203.38.06%20PM.png') center/cover; width:100%; height:260px;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737dc4bff5455bf90382dcb_Screen%20Shot%202024-11-15%20at%203.36.25%20PM.png') center/cover; width:100%; height:260px;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737dc349c77d8046e8bde4e_Screen%20Shot%202024-11-15%20at%203.39.23%20PM.png') center/cover; width:100%; height:260px;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737dc50f5d6a78c18b4becd_Screen%20Shot%202024-11-15%20at%203.37.37%20PM.png') center/cover; width:100%; height:260px;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/6737dc3cb950021bfacec070_Screen%20Shot%202024-11-15%20at%203.39.57%20PM.png') center/cover; width:100%; height:260px;"></div>
+            <div style="background:url('https://cdn.prod.website-files.com/654be13b2726758a325b425f/675beaaa1f747eff2ad0851f_2B499441-2536-4DD1-A47C-2A89F8C0E39F.jpg') center/cover; width:100%; height:260px;"></div>
+          </div>
+          <div class="pg-card-body">
+            <div class="pg-card-cat">DIY & Crafts</div>
+            <div class="pg-card-title">Custom Creations</div>
+            <div class="pg-card-desc">A customized shadowbox with hand-made 3D paper flowers — plus a variety of personalized DIY pieces made on different mediums. Things mean more when you make them yourself.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Coming soon -->
+      <div class="pg-coming-soon">
+        <div class="pg-coming-soon-icon">🌱</div>
+        <div>
+          <div class="pg-coming-soon-title">More coming soon</div>
+          <div class="pg-coming-soon-text">This playground is always growing. Drop back in to see new work — or follow along on <a href="https://www.linkedin.com/in/micahjoyaguilar/" target="_blank" style="color:var(--accent);text-decoration:none;">LinkedIn</a> for updates.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+      <span class="footer-copy">© 2026 Micah Joy Aguilar — vibe coded with love ♡</span>
+      <a href="#" class="footer-back">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+    let mx=-100,my=-100,rx=-100,ry=-100;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cursor.style.left=mx+'px';cursor.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+    document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));});
+    const canvas=document.getElementById('noise-canvas'),ctx=canvas.getContext('2d');
+    function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    function noise(){const w=canvas.width,h=canvas.height,d=ctx.createImageData(w,h);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}ctx.putImageData(d,0,0);setTimeout(()=>requestAnimationFrame(noise),80);}
+    noise();
+    const nav=document.getElementById('main-nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20));
+    nav.classList.toggle('scrolled',window.scrollY>20);
+    const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){const s=Array.from(e.target.parentElement.querySelectorAll('.reveal'));e.target.style.transitionDelay=(s.indexOf(e.target)*.08)+'s';e.target.classList.add('visible');observer.unobserve(e.target);}});},{threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+    // Filter
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cards = document.querySelectorAll('.pg-card');
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.cat === filter) {
+            card.classList.remove('hidden');
+          } else {
+            card.classList.add('hidden');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

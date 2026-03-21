@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Micah Joy Aguilar</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F4F0; --bg-card: #FDFBF8; --text: #1C1917; --text-muted: #8C8079;
+      --accent: #B5977A; --accent-2: #A0B09A; --border: rgba(28,25,23,0.09);
+      --radius: 16px; --radius-sm: 10px;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-grotesk: 'Bricolage Grotesque', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; cursor: none; }
+    #cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s, opacity .2s; mix-blend-mode: multiply; }
+    #cursor-ring { position: fixed; width: 36px; height: 36px; border: 1.5px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .35s cubic-bezier(.25,.46,.45,.94), height .35s, opacity .2s; opacity: 0.5; }
+    body:hover #cursor { opacity: 1; }
+    .cursor-hover #cursor { width: 18px; height: 18px; }
+    .cursor-hover #cursor-ring { width: 56px; height: 56px; opacity: 0.25; }
+    #noise-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.06; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); background-size: 200px 200px; opacity: 0.04; mix-blend-mode: multiply; }
+    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(28,25,23,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(28,25,23,0.04) 1px, transparent 1px); background-size: 48px 48px; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    .container-narrow { max-width: 760px; margin: 0 auto; padding: 0 40px; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 20px 0; transition: background .4s, backdrop-filter .4s, padding .3s, box-shadow .4s; }
+    nav.scrolled { padding: 14px 0; background: rgba(247,244,240,0.65); backdrop-filter: blur(28px) saturate(180%) brightness(1.05); -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05); box-shadow: 0 1px 0 var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .nav-logo-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 400; font-style: italic; color: var(--text); letter-spacing: -0.01em; }
+    .nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .nav-logo-title { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .nav-cta { color: var(--text); border: 1px solid rgba(28,25,23,0.2); padding: 8px 18px; border-radius: 100px; transition: background .2s, color .2s, border-color .2s; }
+    .nav-links .nav-cta:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .65s cubic-bezier(.25,.46,.45,.94), transform .65s cubic-bezier(.25,.46,.45,.94); }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── HERO ── */
+    .about-hero { padding: 160px 0 100px; border-bottom: 1px solid var(--border); }
+    .about-hero-grid { display: grid; grid-template-columns: 1fr 400px; gap: 80px; align-items: center; }
+    .about-eyebrow { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .about-eyebrow::before { content: ''; width: 20px; height: 1px; background: var(--accent); display: block; }
+    .about-headline { font-family: var(--font-grotesk); font-size: clamp(2.6rem, 4.5vw, 4.8rem); font-weight: 500; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 32px; }
+    .about-headline em { font-family: var(--font-serif); font-style: italic; font-weight: 300; text-transform: none; color: var(--accent); font-size: 1.08em; }
+    .about-intro { font-size: 1.05rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 36px; }
+    .about-intro strong { color: var(--text); font-weight: 600; }
+    .about-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 600; color: white; background: var(--text); padding: 13px 26px; border-radius: 100px; text-decoration: none; transition: background .2s, transform .2s; }
+    .btn-primary:hover { background: var(--accent); transform: translateY(-2px); }
+    .btn-ghost { display: inline-flex; align-items: center; gap: 8px; font-size: 0.88rem; font-weight: 500; color: var(--text); border: 1px solid var(--border); padding: 13px 26px; border-radius: 100px; text-decoration: none; transition: border-color .2s, color .2s, transform .2s; }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* Portrait */
+    .about-portrait-wrap { position: relative; }
+    .about-portrait { width: 100%; aspect-ratio: 4/5; border-radius: var(--radius); overflow: hidden; background: #E8E0D8; }
+    .about-portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .about-portrait-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .about-fun-tag { position: absolute; bottom: -18px; left: -18px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 18px; box-shadow: 0 8px 24px rgba(28,25,23,0.08); }
+    .about-fun-tag-label { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .about-fun-tag-value { font-family: var(--font-sans); font-size: 0.82rem; font-weight: 600; color: var(--text); }
+
+    /* ── STORY ── */
+    .about-story { padding: 100px 0; border-bottom: 1px solid var(--border); }
+    .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .story-label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .story-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); display: block; }
+    .story-title { font-family: var(--font-grotesk); font-size: clamp(1.6rem, 2.8vw, 2.4rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 24px; }
+    .story-title em { font-family: var(--font-serif); font-style: italic; font-weight: 300; text-transform: none; color: var(--accent); font-size: 1.08em; }
+    .story-body p { font-size: 0.97rem; line-height: 1.85; color: var(--text-muted); margin-bottom: 18px; }
+    .story-body p:last-child { margin-bottom: 0; }
+    .story-body p strong { color: var(--text); font-weight: 600; }
+    .story-pull { font-family: var(--font-serif); font-size: 1.5rem; font-style: italic; font-weight: 300; color: var(--text); line-height: 1.45; border-left: 2px solid var(--accent); padding: 20px 24px; background: rgba(181,151,122,0.05); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin: 32px 0; }
+
+    /* ── VALUES / FUN FACTS ── */
+    .about-facts { padding: 100px 0; border-bottom: 1px solid var(--border); }
+    .facts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 48px; }
+    .fact-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; transition: border-color .2s, transform .2s; }
+    .fact-card:hover { border-color: rgba(181,151,122,0.35); transform: translateY(-4px); }
+    .fact-icon { font-size: 1.6rem; margin-bottom: 14px; line-height: 1; }
+    .fact-title { font-family: var(--font-sans); font-size: 0.92rem; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+    .fact-body { font-size: 0.85rem; line-height: 1.65; color: var(--text-muted); }
+
+    /* ── SKILLS ── */
+    .about-skills { padding: 100px 0; border-bottom: 1px solid var(--border); }
+    .skills-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 48px; }
+    .skills-col-title { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 20px; }
+    .skill-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .skill-row:last-child { border-bottom: none; }
+    .skill-name { font-size: 0.9rem; color: var(--text); font-weight: 500; }
+    .skill-bar-wrap { width: 100px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .skill-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 1s cubic-bezier(.25,.46,.45,.94); width: 0; }
+    .skill-row.visible .skill-bar { width: var(--w); }
+    .chip-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.06em; color: var(--text); border: 1px solid var(--border); border-radius: 100px; padding: 5px 14px; background: var(--bg-card); transition: border-color .2s, color .2s; }
+    .chip:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── CTA STRIP ── */
+    .about-cta-strip { padding: 100px 0; }
+    .cta-inner { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px 56px; }
+    .cta-title { font-family: var(--font-grotesk); font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 500; letter-spacing: -0.03em; text-transform: uppercase; line-height: 1; margin-bottom: 12px; }
+    .cta-title em { font-family: var(--font-serif); font-style: italic; font-weight: 300; text-transform: none; color: var(--accent); font-size: 1.06em; }
+    .cta-sub { font-size: 0.92rem; color: var(--text-muted); line-height: 1.6; }
+    .cta-btns { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; }
+
+    footer { padding: 32px 0; border-top: 1px solid var(--border); }
+    .footer-copy { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--text-muted); }
+    .footer-back { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .footer-back:hover { color: var(--accent); }
+
+    @media (max-width: 900px) {
+      .about-hero-grid, .story-grid, .skills-cols { grid-template-columns: 1fr; }
+      .facts-grid { grid-template-columns: 1fr 1fr; }
+      .about-portrait-wrap { max-width: 360px; }
+      .cta-inner { grid-template-columns: 1fr; }
+      .cta-btns { align-items: flex-start; flex-direction: row; flex-wrap: wrap; }
+      .nav-links { display: none; }
+      .container, .container-narrow { padding: 0 24px; }
+    }
+    @media (max-width: 600px) {
+      .facts-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <canvas id="noise-canvas"></canvas>
+  <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+    <defs>
+      <filter id="glass-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.025" numOctaves="2" seed="3"/>
+        <feDisplacementMap scale="4" xChannelSelector="R" yChannelSelector="G"/>
+        <feGaussianBlur stdDeviation="0.4"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <nav id="main-nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="index.html" class="nav-logo">
+          <span class="nav-logo-name">micah joy</span>
+          <span class="nav-logo-dot"></span>
+          <span class="nav-logo-title">product designer</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html#work">Work</a></li>
+          <li><a href="about.html" style="color:var(--text)">About</a></li>
+          <li><a href="playground.html">Playground</a></li>
+          <li><a href="index.html#contact" class="nav-cta">Let's Talk</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="about-hero">
+    <div class="container">
+      <div class="about-hero-grid">
+        <div>
+          <div class="about-eyebrow reveal">About me</div>
+          <h1 class="about-headline reveal">
+            Designer.<br>
+            Builder.<br>
+            <em>Creative.</em>
+          </h1>
+          <p class="about-intro reveal">
+            Hi, I'm Micah Joy — a product designer based in Los Angeles with a background in computer information technology and a lifelong love of <strong>making things</strong>. I bring a rare combination of design intuition and technical fluency to everything I build.
+          </p>
+          <div class="about-ctas reveal">
+            <a href="index.html#work" class="btn-primary">
+              View my work
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7 2l4.5 4.5L7 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="resume.html" class="btn-ghost">
+              View resume
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7 2l4.5 4.5L7 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="about-portrait-wrap reveal">
+          <div class="about-portrait">
+            <img src="assets/images/micah-portrait.png" alt="Micah Joy Aguilar"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+            <div class="about-portrait-placeholder" style="display:none;">your photo here</div>
+          </div>
+          <div class="about-fun-tag">
+            <div class="about-fun-tag-label">Fun fact</div>
+            <div class="about-fun-tag-value">Grew up in Papua New Guinea 🌴</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="about-story">
+    <div class="container">
+      <div class="story-grid">
+        <div>
+          <div class="story-label reveal">My story</div>
+          <h2 class="story-title reveal">IT degree,<br><em>design</em> heart</h2>
+        </div>
+        <div class="story-body">
+          <p class="reveal">Growing up, I was always drawn to design — interior spaces, architecture, arts and crafts. Anything that involved making something beautiful or solving a problem creatively, I was there. But somewhere along the way I convinced myself that passion wouldn't pay the bills, so I studied <strong>Computer Information Technology at CSUN</strong> instead.</p>
+
+          <p class="reveal">It didn't take long to realize IT just wasn't for me. I didn't love it the way I loved design. But here's the thing — that detour wasn't wasted. That technical foundation became my <strong>secret weapon</strong>. Most designers can't read code. I can build it. I understand how products actually get made, which means I design with implementation in mind from day one.</p>
+
+          <div class="story-pull reveal">"I didn't just discover design — I came back to it. And I brought everything I'd learned along the way."</div>
+
+          <p class="reveal">After completing my UX design bootcamp at Springboard, I've been freelancing, interning, and building — and I haven't looked back. Every project is a chance to bring something I imagined to life, and that never gets old.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FUN FACTS / PERSONALITY -->
+  <section class="about-facts">
+    <div class="container">
+      <div class="container-narrow" style="padding: 0;">
+        <div class="story-label reveal">Beyond the work</div>
+        <h2 class="story-title reveal">A little more<br><em>about me</em></h2>
+        <p class="reveal" style="font-size:0.97rem;line-height:1.8;color:var(--text-muted);margin-bottom:0;">Design doesn't stop when I close Figma. It shows up in how I cook, how I decorate, how I spend my weekends.</p>
+      </div>
+      <div class="facts-grid">
+        <div class="fact-card reveal">
+          <div class="fact-icon">🎨</div>
+          <div class="fact-title">DIY everything</div>
+          <div class="fact-body">From hand-crafted ornaments to full room makeovers — I believe things are more meaningful when you make them yourself. Crafting is my form of meditation.</div>
+        </div>
+        <div class="fact-card reveal">
+          <div class="fact-icon">🏠</div>
+          <div class="fact-title">Interior design nerd</div>
+          <div class="fact-body">Currently overseeing the design of a full ADU build — picking tiles, flooring, and color palettes. I've been playing The Sims and designing dream homes since I was a kid.</div>
+        </div>
+        <div class="fact-card reveal">
+          <div class="fact-icon">🌍</div>
+          <div class="fact-title">Papua New Guinea raised</div>
+          <div class="fact-body">I grew up in Papua New Guinea — a childhood that shaped my appreciation for color, craft, and culture in ways that still show up in my design work today.</div>
+        </div>
+        <div class="fact-card reveal">
+          <div class="fact-icon">🍳</div>
+          <div class="fact-title">Cooking & creating</div>
+          <div class="fact-body">Cooking is just another form of design to me — you're combining ingredients, aesthetics, and experience into something that makes people feel something.</div>
+        </div>
+        <div class="fact-card reveal">
+          <div class="fact-icon">🎵</div>
+          <div class="fact-title">Music always on</div>
+          <div class="fact-body">There's always music playing when I work. It sets the mood and keeps me in flow — the right playlist can make a tedious design session feel effortless.</div>
+        </div>
+        <div class="fact-card reveal">
+          <div class="fact-icon">🤍</div>
+          <div class="fact-title">Faith, family & dogs</div>
+          <div class="fact-body">Faith keeps me grounded, my husband and family keep me inspired, and my dogs keep me sane. They're the people (and creatures) I design a good life for.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="about-skills">
+    <div class="container">
+      <div class="container-narrow" style="padding:0; margin-bottom: 0;">
+        <div class="story-label reveal">What I bring</div>
+        <h2 class="story-title reveal">Skills &<br><em>tools</em></h2>
+      </div>
+      <div class="skills-cols">
+        <div class="reveal">
+          <div class="skills-col-title">Design skills</div>
+          <div class="skill-row" style="--w:95%"><span class="skill-name">Product Design</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+          <div class="skill-row" style="--w:90%"><span class="skill-name">UX Research</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+          <div class="skill-row" style="--w:92%"><span class="skill-name">UI Design & Visual Design</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+          <div class="skill-row" style="--w:88%"><span class="skill-name">Prototyping</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+          <div class="skill-row" style="--w:85%"><span class="skill-name">Design Systems</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+          <div class="skill-row" style="--w:80%"><span class="skill-name">Branding & Identity</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+          <div class="skill-row" style="--w:78%"><span class="skill-name">Accessibility (WCAG)</span><div class="skill-bar-wrap"><div class="skill-bar"></div></div></div>
+        </div>
+        <div class="reveal">
+          <div class="skills-col-title">Tools & technologies</div>
+          <div class="chip-cloud">
+            <span class="chip">Figma</span>
+            <span class="chip">FigJam</span>
+            <span class="chip">Cursor</span>
+            <span class="chip">Claude Code</span>
+            <span class="chip">Pencil.dev</span>
+            <span class="chip">GitHub</span>
+            <span class="chip">Webflow</span>
+            <span class="chip">WordPress</span>
+            <span class="chip">HTML / CSS</span>
+            <span class="chip">JavaScript</span>
+            <span class="chip">Adobe Illustrator</span>
+            <span class="chip">Photoshop</span>
+            <span class="chip">Canva</span>
+            <span class="chip">Notion</span>
+            <span class="chip">AI Tools</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="about-cta-strip">
+    <div class="container">
+      <div class="cta-inner reveal">
+        <div>
+          <h2 class="cta-title">Let's build something<br><em>together</em></h2>
+          <p class="cta-sub">Open to full-time product design roles. Always happy to chat about design, collaboration, or anything creative.</p>
+        </div>
+        <div class="cta-btns">
+          <a href="index.html#contact" class="btn-primary">
+            Get in touch
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5h9M7 2l4.5 4.5L7 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="resume.html" class="btn-ghost">View resume</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex;justify-content:space-between;align-items:center;width:100%;">
+      <span class="footer-copy">© 2026 Micah Joy Aguilar — vibe coded with love ♡</span>
+      <a href="#" class="footer-back">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    const cursor=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
+    let mx=-100,my=-100,rx=-100,ry=-100;
+    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+    (function loop(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;cursor.style.left=mx+'px';cursor.style.top=my+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+    document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));});
+    const canvas=document.getElementById('noise-canvas'),ctx=canvas.getContext('2d');
+    function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+    resize();window.addEventListener('resize',resize);
+    function noise(){const w=canvas.width,h=canvas.height,d=ctx.createImageData(w,h);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}ctx.putImageData(d,0,0);setTimeout(()=>requestAnimationFrame(noise),80);}
+    noise();
+    const nav=document.getElementById('main-nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20));
+    nav.classList.toggle('scrolled',window.scrollY>20);
+
+    // Reveal + skill bars
+    const observer=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const s=Array.from(e.target.parentElement.querySelectorAll('.reveal'));
+          e.target.style.transitionDelay=(s.indexOf(e.target)*.1)+'s';
+          e.target.classList.add('visible');
+          // animate skill bars inside this element
+          e.target.querySelectorAll('.skill-row').forEach(r=>r.classList.add('visible'));
+          observer.unobserve(e.target);
+        }
+      });
+    },{threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+  </script>
+</body>
+</html>
