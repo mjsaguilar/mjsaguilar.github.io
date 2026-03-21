@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Micah Joy — Product Designer</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
@@ -1044,6 +1047,7 @@
           <li><a href="#work">Work</a></li>
           <li><a href="about.html">About</a></li>
           <li><a href="playground.html">Playground</a></li>
+          <li><a href="resume.html">Resume</a></li>
           <li><a href="#contact" class="nav-cta">Let's Talk</a></li>
         </ul>
       </div>
@@ -1128,16 +1132,38 @@
           <div class="section-label">Selected Work</div>
           <h2 class="section-title">Projects that <em>matter</em></h2>
         </div>
-        <a href="#work" class="btn-ghost">
-          All projects
+        <a href="work/index.html" class="btn-ghost">
+          View all work
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
 
       <div class="work-grid">
 
-        <!-- Winskills - wide -->
-        <a href="work/winskills.html" class="work-card wide reveal">
+        <!-- Datavyne — wide, most impressive first -->
+        <a href="work/datavyne.html" class="work-card wide reveal">
+          <div class="work-card-img">
+            <img src="assets/images/datavyne-mockup.png" alt="Datavyne" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="work-card-img-placeholder" style="display:none;">datavyne thumbnail</div>
+          </div>
+          <div class="work-card-body">
+            <div class="work-card-tags">
+              <span class="work-card-tag">Freelance</span>
+              <span class="work-card-tag">Web Design</span>
+              <span class="work-card-tag">Brand & Graphic Design</span>
+              <span class="work-card-tag">Healthcare SaaS</span>
+            </div>
+            <h3 class="work-card-title">Datavyne: Brand & Web Redesign</h3>
+            <p class="work-card-desc">Redesigning the digital presence of a healthcare data validation startup — from Figma mockups to a live WordPress build, plus full brand system.</p>
+            <span class="work-card-link">
+              View case study
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Winskills -->
+        <a href="work/winskills.html" class="work-card reveal">
           <div class="work-card-img">
             <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/66a41fab5ab335fa0db71b22_thumbnail-winskills-min.png" alt="Winskills" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
             <div class="work-card-img-placeholder" style="display:none;">winskills thumbnail</div>
@@ -1149,7 +1175,50 @@
               <span class="work-card-tag">Website Redesign</span>
             </div>
             <h3 class="work-card-title">Winskills: Website Redesign</h3>
-            <p class="work-card-desc">Revamping a 30+ year manufacturing company's website for clarity, precision, and effortless navigation.</p>
+            <p class="work-card-desc">Revamping a 30+ year training company's website for clarity, precision, and effortless navigation.</p>
+            <span class="work-card-link">
+              View case study
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- OneAccord -->
+        <a href="work/oneaccord.html" class="work-card reveal">
+          <div class="work-card-img">
+            <img src="assets/images/oneaccord-screens-1.png" alt="OneAccord" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="work-card-img-placeholder" style="display:none;">oneaccord thumbnail</div>
+          </div>
+          <div class="work-card-body">
+            <div class="work-card-tags">
+              <span class="work-card-tag">Hackathon</span>
+              <span class="work-card-tag">Faith Tech</span>
+              <span class="work-card-tag">Mobile App</span>
+            </div>
+            <h3 class="work-card-title">OneAccord: Global Prayer App</h3>
+            <p class="work-card-desc">A faith-tech hackathon sprint designing a mobile app to unite believers worldwide in synchronized prayer — shipped to production in 3 weeks.</p>
+            <span class="work-card-link">
+              View case study
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- CIK — wide -->
+        <a href="work/cik.html" class="work-card wide reveal">
+          <div class="work-card-img">
+            <img src="assets/images/cik-brand.png" alt="Christ Is King" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="work-card-img-placeholder" style="display:none;">cik thumbnail</div>
+          </div>
+          <div class="work-card-body">
+            <div class="work-card-tags">
+              <span class="work-card-tag">Hackathon</span>
+              <span class="work-card-tag">Faith Tech</span>
+              <span class="work-card-tag">Bitcoin / Web3</span>
+              <span class="work-card-tag">Gamification</span>
+            </div>
+            <h3 class="work-card-title">$CIK: Daily Bread App</h3>
+            <p class="work-card-desc">A kingdom-powered movement bringing the church on-chain — gamified daily scripture, streaks, and $CIK token rewards. Best brand at Onchain Summer 2025.</p>
             <span class="work-card-link">
               View case study
               <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1177,43 +1246,12 @@
           </div>
         </a>
 
-        <!-- House2Home -->
-        <a href="work/house2home.html" class="work-card reveal">
-          <div class="work-card-img">
-            <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/66a41b213e9458651efded1f_thumbnail-h2hlaptop-min.png" alt="House2Home" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="work-card-img-placeholder" style="display:none;">house2home thumbnail</div>
-          </div>
-          <div class="work-card-body">
-            <div class="work-card-tags">
-              <span class="work-card-tag">UI/UX Design</span>
-              <span class="work-card-tag">E-Commerce</span>
-            </div>
-            <h3 class="work-card-title">House2Home: Budget-Friendly Spaces</h3>
-            <p class="work-card-desc">A streamlined e-commerce experience for stylish, affordable home decor — turning dream spaces into reality.</p>
-            <span class="work-card-link">
-              View case study
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Milkyway -->
-        <a href="work/milkyway.html" class="work-card reveal">
-          <div class="work-card-img">
-            <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/66a34393d71d220abd900090_thumbnail-milkyway.png" alt="Milkyway" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-            <div class="work-card-img-placeholder" style="display:none;">milkyway thumbnail</div>
-          </div>
-          <div class="work-card-body">
-            <div class="work-card-tags">
-              <span class="work-card-tag">UI/UX Design</span>
-              <span class="work-card-tag">Freemium Conversion</span>
-            </div>
-            <h3 class="work-card-title">Milkyway: Enhancing UX for Premium Conversion</h3>
-            <p class="work-card-desc">Elevating a streaming service by guiding freemium users toward the value of a paid subscription.</p>
-            <span class="work-card-link">
-              View case study
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6h8M6 2l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </span>
+        <!-- View all CTA card -->
+        <a href="work/index.html" class="work-card reveal" style="display:flex;align-items:center;justify-content:center;min-height:280px;border:1.5px dashed rgba(181,151,122,0.35);background:rgba(181,151,122,0.04);">
+          <div style="text-align:center;padding:40px;">
+            <div style="font-family:var(--font-serif);font-size:2.8rem;font-style:italic;font-weight:300;color:var(--accent);line-height:1;margin-bottom:12px;">+2</div>
+            <div style="font-family:var(--font-grotesk);font-size:0.9rem;font-weight:500;letter-spacing:-0.01em;text-transform:uppercase;color:var(--text);margin-bottom:6px;">More Projects</div>
+            <div style="font-family:var(--font-mono);font-size:0.62rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);">View all work →</div>
           </div>
         </a>
 
