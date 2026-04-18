@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Membersheep — Micah Joy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F4F0; --bg-card: #FDFBF8; --text: #1C1917; --text-muted: #8C8079;
+      --accent: #B5977A; --accent-2: #A0B09A; --border: rgba(28,25,23,0.09);
+      --radius: 16px; --radius-sm: 10px;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', 'DM Sans', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-grotesk: 'Bricolage Grotesque', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font-sans); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; cursor: none; }
+    #cursor { position: fixed; width: 10px; height: 10px; background: var(--accent); border-radius: 50%; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); transition: width .2s, height .2s, opacity .2s; mix-blend-mode: multiply; }
+    #cursor-ring { position: fixed; width: 36px; height: 36px; border: 1.5px solid var(--accent); border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .35s cubic-bezier(.25,.46,.45,.94), height .35s, opacity .2s; opacity: 0.5; }
+    body:hover #cursor { opacity: 1; }
+    .cursor-hover #cursor { width: 18px; height: 18px; }
+    .cursor-hover #cursor-ring { width: 56px; height: 56px; opacity: 0.25; }
+    #noise-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: 0.06; }
+    body::before { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E"); background-size: 200px 200px; opacity: 0.04; mix-blend-mode: multiply; }
+    body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0; background-image: linear-gradient(rgba(28,25,23,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(28,25,23,0.04) 1px, transparent 1px); background-size: 48px 48px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    .container-narrow { max-width: 760px; margin: 0 auto; padding: 0 40px; }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; padding: 20px 0; transition: background .4s, backdrop-filter .4s, padding .3s, box-shadow .4s; }
+    nav.scrolled { padding: 14px 0; background: rgba(247,244,240,0.65); backdrop-filter: blur(28px) saturate(180%) brightness(1.05); -webkit-backdrop-filter: blur(28px) saturate(180%) brightness(1.05); box-shadow: 0 1px 0 var(--border); }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { display: flex; align-items: center; gap: 8px; text-decoration: none; }
+    .nav-logo-name { font-family: var(--font-serif); font-size: 1.15rem; font-weight: 400; font-style: italic; color: var(--text); letter-spacing: -0.01em; }
+    .nav-logo-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+    .nav-logo-title { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links .nav-cta { color: var(--text); border: 1px solid rgba(28,25,23,0.2); padding: 8px 18px; border-radius: 100px; transition: background .2s, color .2s, border-color .2s; }
+    .nav-links .nav-cta:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .65s cubic-bezier(.25,.46,.45,.94), transform .65s cubic-bezier(.25,.46,.45,.94); }
+    .reveal.visible { opacity: 1; transform: none; }
+    .cs-hero { padding: 160px 0 80px; border-bottom: 1px solid var(--border); }
+    .cs-hero-back { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; margin-bottom: 48px; transition: color .2s, gap .2s; }
+    .cs-hero-back:hover { color: var(--accent); gap: 12px; }
+    .cs-hero-back svg { transition: transform .2s; }
+    .cs-hero-back:hover svg { transform: translateX(-3px); }
+    .cs-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    .cs-tag { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; border: 1px solid var(--border); border-radius: 100px; padding: 5px 14px; color: var(--text-muted); }
+    .cs-tag.accent { border-color: rgba(181,151,122,0.4); color: var(--accent); background: rgba(181,151,122,0.07); }
+    .cs-hero-title { font-family: var(--font-grotesk); font-size: clamp(2.8rem, 5vw, 5.2rem); font-weight: 500; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 28px; }
+    .cs-hero-title em { font-family: var(--font-serif); font-style: italic; font-weight: 300; text-transform: none; letter-spacing: -0.01em; color: var(--accent); font-size: 1.08em; }
+    .cs-hero-sub { font-size: 1.05rem; line-height: 1.7; color: var(--text-muted); max-width: 600px; margin-bottom: 56px; }
+    .cs-meta { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-card); }
+    .cs-meta-item { padding: 24px 28px; border-right: 1px solid var(--border); }
+    .cs-meta-item:last-child { border-right: none; }
+    .cs-meta-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .cs-meta-value { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .cs-cover { margin: 64px 0 0; border-radius: var(--radius); overflow: hidden; background: #E8E1D8; }
+    .cs-cover img { width: 100%; display: block; }
+    .cs-body { padding: 100px 0; }
+    .cs-section { margin-bottom: 96px; }
+    .cs-section:last-child { margin-bottom: 0; }
+    .cs-section-label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+    .cs-section-label::before { content: ''; width: 20px; height: 1px; background: var(--accent); display: block; }
+    .cs-section-title { font-family: var(--font-grotesk); font-size: clamp(1.6rem, 2.8vw, 2.4rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 24px; }
+    .cs-section-title em { font-family: var(--font-serif); font-style: italic; font-weight: 300; text-transform: none; color: var(--accent); font-size: 1.08em; }
+    .cs-body p { font-size: 0.98rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 20px; }
+    .cs-body p:last-child { margin-bottom: 0; }
+    .cs-body p strong { color: var(--text); font-weight: 600; }
+    .cs-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+    .cs-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; }
+    .cs-card-num { font-family: var(--font-serif); font-size: 2.4rem; font-weight: 300; font-style: italic; color: var(--accent); opacity: 0.6; line-height: 1; margin-bottom: 12px; }
+    .cs-card-title { font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+    .cs-card-body { font-size: 0.85rem; line-height: 1.65; color: var(--text-muted); }
+    .cs-quote { border-left: 2px solid var(--accent); padding: 24px 32px; margin: 48px 0; background: rgba(181,151,122,0.06); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+    .cs-quote p { font-family: var(--font-serif); font-size: 1.3rem; font-style: italic; font-weight: 300; color: var(--text); line-height: 1.55; margin-bottom: 12px !important; }
+    .cs-quote-attr { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .cs-img { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); margin: 40px 0; background: #E8E1D8; }
+    .cs-img img { width: 100%; display: block; }
+    .cs-img-caption { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-align: center; margin-top: 12px; }
+    /* Smaller feature cards for GIF demos */
+    .cs-feature { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; margin: 32px 0; padding: 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); }
+    .cs-feature.reverse { direction: rtl; }
+    .cs-feature.reverse > * { direction: ltr; }
+    .cs-feature-img { border-radius: var(--radius-sm); overflow: hidden; background: #E8E1D8; max-width: 200px; margin: 0 auto; }
+    .cs-feature-img img { width: 100%; display: block; }
+    .cs-feature-label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .cs-feature-title { font-family: var(--font-grotesk); font-size: 1.4rem; font-weight: 500; letter-spacing: -0.02em; text-transform: uppercase; margin-bottom: 14px; color: var(--text); }
+    .cs-feature-body { font-size: 0.9rem; line-height: 1.75; color: var(--text-muted); }
+    /* Equal-height before/after images */
+    .cs-ba { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 40px 0; }
+    .cs-ba-item { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); display: flex; flex-direction: column; }
+    .cs-ba-item .cs-ba-img-wrap { flex: 1; }
+    .cs-ba-item .cs-ba-img-wrap img { width: 100%; height: auto; display: block; }
+    .cs-ba-label { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 10px 16px; background: var(--bg-card); color: var(--text-muted); border-top: 1px solid var(--border); }
+    /* Compact persona side-by-side card */
+    .cs-persona-card { display: grid; grid-template-columns: 1fr 1fr; gap: 0; margin: 40px 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: var(--bg-card); }
+    .cs-persona-card-img { overflow: hidden; }
+    .cs-persona-card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cs-persona-card-quote { padding: 40px 36px; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid var(--border); }
+    .cs-persona-card-quote blockquote { font-family: var(--font-serif); font-size: 1.25rem; font-style: italic; font-weight: 300; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
+    .cs-persona-card-quote blockquote::before { content: '\201C'; font-size: 3rem; line-height: 0; vertical-align: -0.5em; color: var(--accent); opacity: 0.5; display: block; margin-bottom: 8px; }
+    .cs-persona-card-attr { font-family: var(--font-mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    @media (max-width: 768px) { .cs-persona-card { grid-template-columns: 1fr; } .cs-persona-card-img { height: 240px; } .cs-persona-card-quote { border-left: none; border-top: 1px solid var(--border); padding: 28px 24px; } }
+    .cs-outcome-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-top: 32px; }
+    .cs-outcome-list li { display: flex; gap: 16px; align-items: flex-start; }
+    .cs-outcome-list li::before { content: '→'; font-family: var(--font-mono); color: var(--accent); font-size: 0.85rem; flex-shrink: 0; margin-top: 2px; }
+    .cs-outcome-list li span { font-size: 0.95rem; line-height: 1.65; color: var(--text-muted); }
+    .cs-outcome-list li span strong { color: var(--text); font-weight: 600; }
+    .cs-proto-btn { display: inline-flex; align-items: center; gap: 10px; font-size: 0.88rem; font-weight: 600; color: white; background: var(--text); padding: 14px 28px; border-radius: 100px; text-decoration: none; margin-top: 32px; transition: background .2s, transform .2s; }
+    .cs-proto-btn:hover { background: var(--accent); transform: translateY(-2px); }
+    .cs-next { padding: 80px 0; border-top: 1px solid var(--border); }
+    .cs-next-label { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 24px; }
+    .cs-next-card { display: flex; align-items: center; justify-content: space-between; text-decoration: none; color: var(--text); padding: 32px 40px; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); transition: border-color .3s, transform .3s, box-shadow .3s; }
+    .cs-next-card:hover { border-color: rgba(181,151,122,0.4); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(28,25,23,0.08); }
+    .cs-next-title { font-family: var(--font-grotesk); font-size: 1.5rem; font-weight: 500; letter-spacing: -0.02em; text-transform: uppercase; }
+    .cs-next-sub { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+    .cs-next-arrow { width: 48px; height: 48px; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent); transition: background .2s, border-color .2s; flex-shrink: 0; }
+    .cs-next-card:hover .cs-next-arrow { background: var(--accent); border-color: var(--accent); color: white; }
+    footer { padding: 32px 0; border-top: 1px solid var(--border); }
+    .footer-copy { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--text-muted); }
+    .footer-back { font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); text-decoration: none; transition: color .2s; }
+    .footer-back:hover { color: var(--accent); }
+    @media (max-width: 768px) {
+      .container, .container-narrow { padding: 0 24px; }
+      .cs-meta { grid-template-columns: repeat(2, 1fr); }
+      .cs-meta-item:nth-child(2) { border-right: none; }
+      .cs-meta-item:nth-child(1), .cs-meta-item:nth-child(2) { border-bottom: 1px solid var(--border); }
+      .cs-cards, .cs-ba, .cs-feature { grid-template-columns: 1fr; }
+      .cs-feature.reverse { direction: ltr; }
+      .cs-feature-img { max-width: 100%; }
+      .cs-ba-item .cs-ba-img-wrap img { height: 240px; }
+      .cs-hero-title { font-size: 2.4rem; }
+      .cs-next-card { flex-direction: column; align-items: flex-start; gap: 20px; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+  <canvas id="noise-canvas"></canvas>
+  <svg style="position:absolute;width:0;height:0;overflow:hidden;" aria-hidden="true">
+    <defs>
+      <filter id="glass-filter">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.025" numOctaves="2" seed="3"/>
+        <feDisplacementMap scale="4" xChannelSelector="R" yChannelSelector="G"/>
+        <feGaussianBlur stdDeviation="0.4"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <nav id="main-nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a href="../index.html" class="nav-logo">
+          <span class="nav-logo-name">micah joy</span>
+          <span class="nav-logo-dot"></span>
+          <span class="nav-logo-title">product designer</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="../index.html#work">Work</a></li>
+          <li><a href="../about.html">About</a></li>
+          <li><a href="../playground.html">Playground</a></li>
+          <li><a href="../index.html#contact" class="nav-cta">Let's Talk</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="cs-hero">
+    <div class="container">
+      <a href="../index.html#work" class="cs-hero-back">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M10 7H4M6 10l-3-3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Back to work
+      </a>
+      <div class="cs-tags">
+        <span class="cs-tag">UI/UX Design</span>
+        <span class="cs-tag">Mobile App</span>
+        <span class="cs-tag">iOS</span>
+        <span class="cs-tag">Solo</span>
+      </div>
+      <h1 class="cs-hero-title reveal">Membersheep:<br><em>Subscription</em> Management</h1>
+      <p class="cs-hero-sub reveal">Designing a solution to help users easily manage all their subscriptions in one platform — and never get caught off guard by a forgotten free trial again.</p>
+      <div class="cs-meta reveal">
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Role</div>
+          <div class="cs-meta-value">Lead UX/UI Designer</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Platform</div>
+          <div class="cs-meta-value">iOS Mobile</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Timeline</div>
+          <div class="cs-meta-value">5 Months</div>
+        </div>
+        <div class="cs-meta-item">
+          <div class="cs-meta-label">Tools</div>
+          <div class="cs-meta-value">Figma, FigJam</div>
+        </div>
+      </div>
+      <div class="cs-cover reveal">
+        <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65fbdc7e50b55b2870deb8b9_Hero_Cap_2.png" alt="Membersheep app screens">
+      </div>
+    </div>
+  </section>
+
+  <main class="cs-body">
+
+    <!-- OVERVIEW -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Overview</div>
+        <h2 class="cs-section-title reveal">The <em>problem</em></h2>
+        <p class="reveal">In today's increasingly digital lifestyle, subscriptions have become a daily necessity — streaming, software, fitness, lifestyle. But this convenience has introduced a growing problem: <strong>subscription chaos and financial mismanagement.</strong></p>
+        <p class="reveal">People sign up for free trials and forget to cancel. Autopay quietly drains accounts. There's no single place to see what you're actually paying for each month. A 2021 Chase Bank survey found that <strong>nearly 70% of consumers underestimate how much they spend on subscriptions monthly</strong> — often by $100 or more. Membersheep was designed to fix all of that.</p>
+      </div>
+      <div class="container">
+        <div class="cs-cards reveal">
+          <div class="cs-card">
+            <div class="cs-card-num">01</div>
+            <div class="cs-card-title">Subscription Chaos</div>
+            <div class="cs-card-body">Users have subscriptions scattered across multiple apps, banks, and email confirmations with no central place to track them all.</div>
+          </div>
+          <div class="cs-card">
+            <div class="cs-card-num">02</div>
+            <div class="cs-card-title">Forgotten Free Trials</div>
+            <div class="cs-card-body">Without timely reminders, users frequently get charged after trial periods end — a small but frustrating and avoidable expense.</div>
+          </div>
+          <div class="cs-card">
+            <div class="cs-card-num">03</div>
+            <div class="cs-card-title">Financial Blind Spots</div>
+            <div class="cs-card-body">Autopay makes it easy to lose sight of where money is going. Users often don't realize how much they're spending on subscriptions monthly.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SOLUTION / FEATURES -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Solution</div>
+        <h2 class="cs-section-title reveal">One place for <em>everything</em></h2>
+        <p class="reveal">Membersheep is a mobile app that lets users manage all their subscriptions in one platform — by connecting a bank account or card, or entering details manually. Users can track free trials, get notified before they're charged, and cancel subscriptions without the usual friction.</p>
+      </div>
+      <div class="container">
+        <div class="cs-feature reveal">
+          <div class="cs-feature-img">
+            <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/6603422864865043335f7038_Dashboard.gif" alt="Membersheep dashboard">
+          </div>
+          <div>
+            <div class="cs-feature-label">Feature 01</div>
+            <div class="cs-feature-title">Home Dashboard</div>
+            <p class="cs-feature-body">A curated summary that instantly shows users the full picture of their subscription activity — total spend, active subscriptions, and upcoming charges all at a glance. Megan's frustration with not knowing her monthly total directly shaped this screen: the spending summary is the first thing she sees when she opens the app.</p>
+          </div>
+        </div>
+        <div class="cs-feature reverse reveal">
+          <div class="cs-feature-img">
+            <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/66034426cf3e01ed5d6f3c84_Add%20Subscription-compressed.gif" alt="Add subscription flow">
+          </div>
+          <div>
+            <div class="cs-feature-label">Feature 02</div>
+            <div class="cs-feature-title">Add New Subscription</div>
+            <p class="cs-feature-body">A simple step-by-step process that guides users through selecting and inputting their subscription details seamlessly — no friction, no confusion. Because 78% of survey respondents said they'd only use a tracker if setup took under two minutes, I kept this flow to four taps maximum.</p>
+          </div>
+        </div>
+        <div class="cs-feature reveal">
+          <div class="cs-feature-img">
+            <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/66034289e0afd6a8665ccc5c_Track%20Free%20Trial.gif" alt="Track free trial">
+          </div>
+          <div>
+            <div class="cs-feature-label">Feature 03</div>
+            <div class="cs-feature-title">Track Free Trials</div>
+            <p class="cs-feature-body">The trial tracker lets users monitor remaining trial periods and get notified before they convert to paid — so they can make informed decisions without being caught off guard. This feature was the single most-requested outcome from user interviews, where every participant described getting charged by surprise at least once.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESEARCH -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Discover</div>
+        <h2 class="cs-section-title reveal">Research & <em>insights</em></h2>
+        <p class="reveal">I conducted <strong>5 user interviews</strong> and an <strong>online survey with 55 respondents</strong> who actively manage multiple subscriptions — one of the most substantial research efforts I'd undertaken at that point in my training. The goal was to understand real pain points, not assumptions, and let the data drive every design decision that followed.</p>
+        <p class="reveal">Three themes emerged so consistently across both methods that they became the direct brief for the design: people needed a central hub, proactive alerts before charges hit, and a fast way to see their total monthly spend at a glance.</p>
+      </div>
+      <div class="container">
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ff53e44060c78c4940710e_surveyresults.png" alt="Survey results">
+        </div>
+        <div class="cs-img-caption">Primary research — survey results (55 respondents)</div>
+      </div>
+      <div class="container-narrow">
+        <div class="cs-quote reveal">
+          <p>"I would like to get notified at least 7 days before I get billed for a subscription."</p>
+          <div class="cs-quote-attr">— User interview participant</div>
+        </div>
+        <p class="reveal">This quote became a design constraint, not just a data point. It directly informed the <strong>7-day default reminder</strong> built into the trial tracker — a specific, research-backed decision rather than an arbitrary number.</p>
+      </div>
+      <div class="container">
+        <div class="cs-cards reveal">
+          <div class="cs-card">
+            <div class="cs-card-num">↗</div>
+            <div class="cs-card-title">Time-consuming to track</div>
+            <div class="cs-card-body">Keeping tabs on subscriptions was consistently described as a struggle — users had no system that worked for them. This led directly to the one-screen dashboard summary.</div>
+          </div>
+          <div class="cs-card">
+            <div class="cs-card-num">↗</div>
+            <div class="cs-card-title">No alerts = forgotten trials</div>
+            <div class="cs-card-body">Every interview participant had been charged by a forgotten trial at least once. This made the trial tracker the highest-priority feature in the entire app.</div>
+          </div>
+          <div class="cs-card">
+            <div class="cs-card-num">↗</div>
+            <div class="cs-card-title">Autopay creates blind spots</div>
+            <div class="cs-card-body">When payments happen automatically, it's easy to lose track of where money is going. This insight shaped the monthly spend total as the hero metric on the home dashboard.</div>
+          </div>
+        </div>
+        <div class="cs-img reveal" style="margin-top: 40px;">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ff5c874712eb2efbe151d2_secondaryresearch.png" alt="Chase Bank survey results">
+        </div>
+        <div class="cs-img-caption">Secondary research — Chase Bank survey on recurring payments (2021)</div>
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ff5a97b22a2b364a80174d_competitiveanalysis.png" alt="Competitive analysis">
+        </div>
+        <div class="cs-img-caption">Competitive analysis — subscription & finance apps</div>
+      </div>
+    </section>
+
+    <!-- DEFINE -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Define</div>
+        <h2 class="cs-section-title reveal">Meet <em>Megan</em></h2>
+        <p class="reveal">Interview patterns converged on a clear user archetype: a busy young professional who knows she's overpaying for subscriptions but doesn't have the time or system to do anything about it. I built Megan to give that archetype a name, a face, and a set of frustrations I could design against.</p>
+        <p class="reveal">Megan's three core needs — <strong>visibility into spending, proactive alerts, and frictionless setup</strong> — became the non-negotiable requirements that every screen had to serve. When I faced a design decision, I asked: would this save Megan time, or add to her cognitive load?</p>
+      </div>
+      <div class="container">
+        <div class="cs-persona-card reveal">
+          <div class="cs-persona-card-img">
+            <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ff7d1f69736ba3dbdff2aa_userpersona.png" alt="User persona — Megan">
+          </div>
+          <div class="cs-persona-card-quote">
+            <blockquote>"I'm forgetful and I think I'm just really busy and don't have time to manage all my subscriptions."</blockquote>
+            <div class="cs-persona-card-attr">— Megan, 26 · Senior Marketing Associate</div>
+          </div>
+        </div>
+        <div class="cs-img-caption">User persona — Megan, 26, Senior Marketing Associate</div>
+      </div>
+    </section>
+
+    <!-- DEVELOP -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Develop</div>
+        <h2 class="cs-section-title reveal">From <em>sketches</em> to screens</h2>
+        <p class="reveal">Before touching Figma, I mapped out user flows and sketched key screens by hand — the fastest way to explore structure without getting attached to aesthetics too early. Starting on paper also forced me to focus on the logic of each interaction rather than how it looked, which kept Megan's needs front and center throughout ideation.</p>
+      </div>
+      <div class="container">
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ff8cffde98e0fec2bfb3a0_red-route2-update.png" alt="User flow">
+        </div>
+        <div class="cs-img-caption">User flow — Add New Subscription</div>
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ff9f77378d84ed952ed005_sketches.png" alt="Early sketches">
+        </div>
+        <div class="cs-img-caption">Early sketches — key screens</div>
+      </div>
+    </section>
+
+    <!-- USABILITY TESTING -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Deliver</div>
+        <h2 class="cs-section-title reveal">Testing & <em>iteration</em></h2>
+        <p class="reveal">I asked <strong>5 people</strong> to navigate the wireframe prototype and observed where they hesitated, got confused, or had unmet expectations. Rather than asking "did you like it?", I gave each participant specific tasks to complete — watching where they stumbled told me far more than any preference question could. Two key findings directly shaped the final design.</p>
+      </div>
+      <div class="container">
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ffda41590d432567a53216_first-wireframes.png" alt="Wireframes">
+        </div>
+        <div class="cs-img-caption">Low-fidelity wireframes — tested with 5 participants</div>
+      </div>
+      <div class="container-narrow">
+        <div class="cs-section-label reveal" style="margin-top: 56px;">Finding 01</div>
+        <h3 class="cs-section-title reveal" style="font-size: 1.4rem;">Add <em>Subscription</em> flow</h3>
+        <p class="reveal">The "Add a Custom Subscription" button placement confused testers — 4 out of 5 paused and re-read the screen before proceeding. The competing CTAs created decision paralysis at a critical step in the flow. It was removed and replaced with a single, clear "Continue" button, reducing the cognitive load and keeping the primary path unambiguous.</p>
+      </div>
+      <div class="container">
+        <div class="cs-ba reveal">
+          <div class="cs-ba-item">
+            <div class="cs-ba-img-wrap">
+              <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ffdb0e7523e33dfa7b71cf_add%20subscription-before.png" alt="Before">
+            </div>
+            <div class="cs-ba-label">Before</div>
+          </div>
+          <div class="cs-ba-item">
+            <div class="cs-ba-img-wrap">
+              <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ffdb10a5efd4c62c4d0b6d_add%20subscription-final.png" alt="After">
+            </div>
+            <div class="cs-ba-label">After</div>
+          </div>
+        </div>
+      </div>
+      <div class="container-narrow">
+        <div class="cs-section-label reveal" style="margin-top: 56px;">Finding 02</div>
+        <h3 class="cs-section-title reveal" style="font-size: 1.4rem;">Active <em>Subscriptions</em> card</h3>
+        <p class="reveal">All 5 testers tapped "7 active subscriptions" expecting it to be a link — when nothing happened, they assumed the app was broken. This was a clear affordance failure. The card was redesigned to clearly surface three distinct actions: view active subscriptions, view trials, or add new — turning a passive stat into an actionable hub.</p>
+      </div>
+      <div class="container">
+        <div class="cs-ba reveal">
+          <div class="cs-ba-item">
+            <div class="cs-ba-img-wrap">
+              <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ffe15d68384b0aaeb4d64a_usertesting-before.png" alt="Before">
+            </div>
+            <div class="cs-ba-label">Before</div>
+          </div>
+          <div class="cs-ba-item">
+            <div class="cs-ba-img-wrap">
+              <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/65ffe15ba7370d500be57e37_usertesting-after.png" alt="After">
+            </div>
+            <div class="cs-ba-label">After</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FINAL SCREENS -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Final Design</div>
+        <h2 class="cs-section-title reveal">High-fidelity <em>screens</em></h2>
+        <p class="reveal">The final designs brought together all research, testing, and iteration into a polished, cohesive iOS experience — every screen traceable back to a specific user need or testing insight.</p>
+      </div>
+      <div class="container">
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/6603b410042822fd6e487687_subscriptions%20screens%201.png" alt="Home and subscriptions screens">
+        </div>
+        <div class="cs-img-caption">Home & subscriptions list screens</div>
+        <div class="cs-img reveal">
+          <img src="https://cdn.prod.website-files.com/654be13b2726758a325b425f/6603b414d2e42216b698b345_freetrial%201.png" alt="Free trial screens">
+        </div>
+        <div class="cs-img-caption">Track free trial & free trial reminder screens</div>
+      </div>
+      <div class="container-narrow">
+        <a href="https://www.figma.com/proto/XjEYR1ZtHrajF9tpXRhJPa/Micah-Joy-Aguilar-MemberSheep?type=design&node-id=2055-17857&viewport=1142%2C736%2C0.04&t=iJzwNytfeInUIjzz-0&scaling=scale-down&starting-point-node-id=2055%3A21882&show-proto-sidebar=1" target="_blank" rel="noopener noreferrer" class="cs-proto-btn reveal">
+          View Figma Prototype
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- REFLECTION -->
+    <section class="cs-section">
+      <div class="container-narrow">
+        <div class="cs-section-label reveal">Reflection</div>
+        <h2 class="cs-section-title reveal">What I <em>learned</em></h2>
+        <p class="reveal">Membersheep was my first end-to-end UX project, and looking back, it's the one that taught me what design actually is. Not the visual layer — the thinking underneath it. Every screen on this project exists because a real person told me something frustrating about their life, and I tried to make it a little less frustrating.</p>
+        <ul class="cs-outcome-list reveal">
+          <li><span><strong>Usability testing changes everything</strong> — both before/after iterations came directly from watching real people use the prototype. The "broken link" moment in Finding 02 would never have surfaced in a design review. Only real users revealed it.</span></li>
+          <li><span><strong>Accessibility needs to be designed in, not retrofitted</strong> — I'd run a contrast audit and test with larger text sizes from the very first wireframe. Accessibility decisions made at hi-fi are ten times harder to fix than ones made at lo-fi.</span></li>
+          <li><span><strong>Research is only useful if it informs decisions</strong> — the biggest shift in my thinking was learning to connect a data point to a specific design choice. "55 people said X" only matters if you can point to the screen it shaped.</span></li>
+          <li><span><strong>Future scope</strong> — advanced spending analytics, personalized recommendations based on usage patterns, and a one-tap cancellation flow integrated directly with subscription providers would be the natural next features to explore.</span></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <section class="cs-next">
+    <div class="container">
+      <div class="cs-next-label">Next project</div>
+      <a href="house2home.html" class="cs-next-card">
+        <div>
+          <div class="cs-next-title">House2Home</div>
+          <div class="cs-next-sub">Designing budget-friendly spaces with ease — UI/UX · E-Commerce</div>
+        </div>
+        <div class="cs-next-arrow">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h12M9 3l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+      <span class="footer-copy">© 2026 Micah Joy Aguilar — vibe coded with love ♡</span>
+      <a href="#" class="footer-back">Back to top ↑</a>
+    </div>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor'), ring = document.getElementById('cursor-ring');
+    let mx = -100, my = -100, rx = -100, ry = -100;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function loop() { rx += (mx-rx)*.12; ry += (my-ry)*.12; cursor.style.left=mx+'px'; cursor.style.top=my+'px'; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(loop); })();
+    document.querySelectorAll('a,button').forEach(el => { el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover')); el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover')); });
+    const canvas = document.getElementById('noise-canvas'), ctx = canvas.getContext('2d');
+    function resize() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    function noise() { const w=canvas.width,h=canvas.height,d=ctx.createImageData(w,h); for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;} ctx.putImageData(d,0,0); setTimeout(()=>requestAnimationFrame(noise),80); }
+    noise();
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>20));
+    nav.classList.toggle('scrolled',window.scrollY>20);
+    const observer = new IntersectionObserver(entries=>{ entries.forEach(e=>{ if(e.isIntersecting){ const s=Array.from(e.target.parentElement.querySelectorAll('.reveal')); e.target.style.transitionDelay=(s.indexOf(e.target)*.08)+'s'; e.target.classList.add('visible'); observer.unobserve(e.target); } }); },{threshold:0.1});
+    document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{ a.addEventListener('click',function(e){ const t=document.querySelector(this.getAttribute('href')); if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth'});} }); });
+  </script>
+</body>
+</html>
